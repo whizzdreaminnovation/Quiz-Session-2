@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Skills Battle</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#0f172a,#312e81);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:900px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(10px);
+padding:30px;
+border-radius:25px;
+box-shadow:0 10px 40px rgba(0,0,0,0.4);
+text-align:center;
+}
+
+h1{
+font-size:3rem;
+margin-bottom:10px;
+}
+
+.subtitle{
+opacity:0.8;
+margin-bottom:20px;
+}
+
+.scoreboard{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
+font-size:1.1rem;
+}
+
+.timer{
+font-size:1.2rem;
+margin-bottom:15px;
+color:#facc15;
+}
+
+.question-box{
+background:rgba(255,255,255,0.08);
+padding:25px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+.question{
+font-size:1.5rem;
+line-height:1.5;
+}
+
+.options{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-top:20px;
+}
+
+.option-btn{
+padding:18px;
+border:none;
+border-radius:15px;
+cursor:pointer;
+font-size:1rem;
+font-weight:bold;
+transition:0.3s;
+background:white;
+color:#111827;
+}
+
+.option-btn:hover{
+transform:scale(1.03);
+background:#c4b5fd;
+}
+
+.correct{
+background:#22c55e !important;
+color:white !important;
+}
+
+.wrong{
+background:#ef4444 !important;
+color:white !important;
+}
+
+.next-btn{
+margin-top:25px;
+padding:14px 35px;
+border:none;
+border-radius:12px;
+background:#facc15;
+color:#111827;
+font-weight:bold;
+cursor:pointer;
+font-size:1rem;
+display:none;
+}
+
+.final-screen{
+display:none;
+}
+
+.result-text{
+margin-top:20px;
+font-size:1.3rem;
+}
+
+@media(max-width:700px){
+
+.options{
+grid-template-columns:1fr;
+}
+
+h1{
+font-size:2rem;
+}
+
+.question{
+font-size:1.2rem;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 Prompt Skills Battle</h1>
+<p class="subtitle">Can You Talk To AI Like A Pro?</p>
+
+<div class="scoreboard">
+<div>⭐ Score: <span id="score">0</span></div>
+<div>📚 Question: <span id="questionNo">1</span>/10</div>
+</div>
+
+<div class="timer">
+⏳ Time Left: <span id="timer">20</span>s
+</div>
+
+<div id="quizScreen">
+
+<div class="question-box">
+<div class="question" id="question"></div>
+</div>
+
+<div class="options" id="options"></div>
+
+<button class="next-btn" id="nextBtn">
+Next Challenge →
+</button>
+
+</div>
+
+<div class="final-screen" id="finalScreen">
+
+<h1>🎉 Prompt Master Completed!</h1>
+
+<h2 id="finalScore"></h2>
+
+<p class="result-text" id="resultText"></p>
+
+<button class="next-btn" onclick="restartQuiz()" style="display:inline-block;">
+Play Again
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const quizData = [
+
+{
+question:"Which is the BEST prompt for getting a school speech?",
+options:[
+'Write speech',
+'Make something on school',
+'Write a 2-minute motivational school speech for grade 8 students in simple language',
+'Give paragraph'
+],
+answer:'Write a 2-minute motivational school speech for grade 8 students in simple language'
+},
+
+{
+question:"What makes a prompt better?",
+options:[
+'Being vague',
+'Giving detailed instructions',
+'Using only one word',
+'Typing fast'
+],
+answer:'Giving detailed instructions'
+},
+
+{
+question:"Which prompt gives clearer AI output?",
+options:[
+'Make poster',
+'Create a cyberpunk-style AI workshop poster for school students with neon colors',
+'Poster pls',
+'Any design'
+],
+answer:'Create a cyberpunk-style AI workshop poster for school students with neon colors'
+},
+
+{
+question:"What is prompt engineering?",
+options:[
+'Repairing robots',
+'Talking effectively with AI',
+'Coding games',
+'Making websites'
+],
+answer:'Talking effectively with AI'
+},
+
+{
+question:"Which prompt is MOST useful?",
+options:[
+'Write story',
+'Write a funny 100-word story about a robot teacher in a classroom',
+'Story fast',
+'Any random story'
+],
+answer:'Write a funny 100-word story about a robot teacher in a classroom'
+},
+
+{
+question:"Why should prompts include context?",
+options:[
+'To confuse AI',
+'To get more accurate results',
+'To increase typing',
+'No reason'
+],
+answer:'To get more accurate results'
+},
+
+{
+question:"Which prompt helps generate better images?",
+options:[
+'Generate image',
+'Robot image',
+'Create a realistic robot studying in a futuristic classroom with purple lighting',
+'Picture'
+],
+answer:'Create a realistic robot studying in a futuristic classroom with purple lighting'
+},
+
+{
+question:"What happens if prompts are unclear?",
+options:[
+'AI reads minds',
+'AI gives random or weak answers',
+'Internet stops',
+'Nothing changes'
+],
+answer:'AI gives random or weak answers'
+},
+
+{
+question:"Which prompt is best for presentations?",
+options:[
+'Make ppt',
+'Create a 5-slide presentation on AI in education with modern design and short points',
+'Slides now',
+'Presentation'
+],
+answer:'Create a 5-slide presentation on AI in education with modern design and short points'
+},
+
+{
+question:"The future skill students need is...",
+options:[
+'Memorizing only',
+'Better communication with AI',
+'Ignoring technology',
+'Avoiding AI completely'
+],
+answer:'Better communication with AI'
+}
+
+];
+
+let currentQuestion = 0;
+let score = 0;
+let timeLeft = 20;
+let timer;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const scoreEl = document.getElementById("score");
+const questionNoEl = document.getElementById("questionNo");
+const nextBtn = document.getElementById("nextBtn");
+const timerEl = document.getElementById("timer");
+
+function loadQuestion(){
+
+clearInterval(timer);
+
+timeLeft = 20;
+timerEl.innerText = timeLeft;
+
+timer = setInterval(()=>{
+
+timeLeft--;
+timerEl.innerText = timeLeft;
+
+if(timeLeft <= 0){
+clearInterval(timer);
+nextQuestion();
+}
+
+},1000);
+
+const current = quizData[currentQuestion];
+
+questionEl.innerText = current.question;
+
+questionNoEl.innerText = currentQuestion + 1;
+
+optionsEl.innerHTML = "";
+
+current.options.forEach(option=>{
+
+const btn = document.createElement("button");
+
+btn.innerText = option;
+
+btn.classList.add("option-btn");
+
+btn.addEventListener("click",()=>selectAnswer(btn,current.answer));
+
+optionsEl.appendChild(btn);
+
+});
+
+nextBtn.style.display = "none";
+
+}
+
+function selectAnswer(button,correctAnswer){
+
+clearInterval(timer);
+
+const buttons = document.querySelectorAll(".option-btn");
+
+buttons.forEach(btn=>{
+
+btn.disabled = true;
+
+if(btn.innerText === correctAnswer){
+
+btn.classList.add("correct");
+
+}
+
+});
+
+if(button.innerText === correctAnswer){
+
+score++;
+scoreEl.innerText = score;
+
+}else{
+
+button.classList.add("wrong");
+
+}
+
+nextBtn.style.display = "inline-block";
+
+}
+
+nextBtn.addEventListener("click",()=>{
+
+nextQuestion();
+
+});
+
+function nextQuestion(){
+
+currentQuestion++;
+
+if(currentQuestion < quizData.length){
+
+loadQuestion();
+
+}else{
+
+showFinalScreen();
+
+}
+
+}
+
+function showFinalScreen(){
+
+document.getElementById("quizScreen").style.display = "none";
+
+document.getElementById("finalScreen").style.display = "block";
+
+document.getElementById("finalScore").innerText =
+`Your Score: ${score} / ${quizData.length}`;
+
+let text = "";
+
+if(score >= 8){
+
+text = "🚀 You are an AI Prompt Master!";
+
+}else if(score >=5){
+
+text = "🔥 Good job! Your prompt skills are growing.";
+
+}else{
+
+text = "💡 Keep practicing your prompt skills.";
+
+}
+
+document.getElementById("resultText").innerText = text;
+
+}
+
+function restartQuiz(){
+
+currentQuestion = 0;
+score = 0;
+
+scoreEl.innerText = 0;
+
+document.getElementById("quizScreen").style.display = "block";
+document.getElementById("finalScreen").style.display = "none";
+
+loadQuestion();
+
+}
+
+loadQuestion();
+
+</script>
+
+</body>
+</html>
